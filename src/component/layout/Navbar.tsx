@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dumbbell,
   LayoutDashboard,
   CalendarDays,
   Settings,
   X,
+  CircleUserRound,
 } from "lucide-react";
 import ExerciseIcon from "../../assets/ExerciseIcon";
+import RegisterWithEmail from "../../authentication/RegisterWithEmail";
+import LoginWithEmail from "../../authentication/LoginWithEmail";
+import google from "/google.png";
 
 type IconComponent = React.ComponentType<{ className?: string }>;
 
@@ -24,13 +29,11 @@ function NavItem({
   return (
     <div
       onClick={onClick}
-      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${active ? "bg-primary/20" : "hover:bg-primary/20"} transition-colors`}
+      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${active ? "bg-primary" : "hover:bg-primary/20"} transition-colors`}
     >
-      <Icon
-        className={`w-6 h-6 ${active ? "text-primary" : "text-white/70"}`}
-      />
+      <Icon className={`w-6 h-6 ${active ? "text-black" : "text-white/70"}`} />
       <p
-        className={`font-display ${active ? "text-primary" : "text-white/90"}`}
+        className={`font-display ${active ? "text-black font-bold" : "text-white/90"}`}
       >
         {label}
       </p>
@@ -58,6 +61,12 @@ function Navbar({ className, ...props }: NavbarProps) {
   }, [open]);
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const navigate = useNavigate();
+
+  const navigateLogin = () => {
+    navigate("/login");
   };
   return (
     <nav
@@ -95,7 +104,7 @@ function Navbar({ className, ...props }: NavbarProps) {
       </div>
 
       {open && (
-        <div className="z-50 w-3/4 md:w-1/3 lg:w-1/4 h-screen bg-primary-dark p-4 backdrop-blur-2xl border-r-[0.5px] border-green/15">
+        <div className="z-50 w-3/4 md:w-1/3 lg:w-1/4 h-screen bg-primary-dark p-6 backdrop-blur-2xl border-r-[0.5px] border-green/15">
           <div className="flex items-center justify-between mb-18">
             <div className="flex items-center gap-2">
               <Dumbbell className="w-8 h-8 p-1 rounded bg-primary text-background-dark" />
@@ -146,47 +155,18 @@ function Navbar({ className, ...props }: NavbarProps) {
               }}
             />
             <span className="border-b-[0.5px] border-white/15 w-auto block mt-105 md:mt-150 lg:mt-115 lg:inline"></span>
+            <div className="flex items-center gap-8">
+              <div className="size-10 bg-white/15 p-2 rounded-3xl mt-6">
+                {/* features: add user name after auth*/}
+                <button onClick={navigateLogin}>
+                  <CircleUserRound className="text-primary" />
+                </button>
+              </div>
+              <p className="text-white font-bold mt-6">UserName</p>
+            </div>
           </div>
         </div>
       )}
-
-      {/* Logo */}
-      {/* <div className="hidden md:block">
-        <div className="flex items-center gap-2 mb-10 ml-2 ">
-          <Dumbbell className="w-8 h-8 p-1 rounded bg-primary text-background-dark" />
-          <p className="font-display text-white font-bold text-2xl leading-none">
-            FitTrack
-          </p>
-        </div> */}
-
-      {/* Nav Items */}
-      {/* <div className="flex-col gap-4 hidden md:block">
-          <NavItem
-            icon={LayoutDashboard}
-            label="Dashboard"
-            active={activeItem === "Dashboard"}
-            onClick={() => setActiveItem("Dashboard")}
-          />
-          <NavItem
-            icon={ExerciseIcon}
-            label="Workouts"
-            active={activeItem === "Workouts"}
-            onClick={() => setActiveItem("Workouts")}
-          />
-          <NavItem
-            icon={CalendarDays}
-            label="Calendar"
-            active={activeItem === "Calendar"}
-            onClick={() => setActiveItem("Calendar")}
-          />
-          <NavItem
-            icon={Settings}
-            label="Settings"
-            active={activeItem === "Settings"}
-            onClick={() => setActiveItem("Settings")}
-          />
-        </div>
-      </div> */}
     </nav>
   );
 }

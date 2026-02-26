@@ -11,6 +11,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["sans-serif"],
+        primary: ["monospace"],
       },
       borderRadius: {
         DEFAULT: "0.25rem",
