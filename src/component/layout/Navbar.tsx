@@ -9,9 +9,7 @@ import {
   CircleUserRound,
 } from "lucide-react";
 import ExerciseIcon from "../../assets/ExerciseIcon";
-import RegisterWithEmail from "../../authentication/RegisterWithEmail";
-import LoginWithEmail from "../../authentication/LoginWithEmail";
-import google from "/google.png";
+import { useAuth } from "../../context/AuthProvider";
 
 type IconComponent = React.ComponentType<{ className?: string }>;
 
@@ -47,6 +45,7 @@ function Navbar({ className, ...props }: NavbarProps) {
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [open, setOpen] = useState(false);
 
+
   useEffect(() => {
     if (!open) {
       document.body.style.overflow = "";
@@ -68,6 +67,13 @@ function Navbar({ className, ...props }: NavbarProps) {
   const navigateLogin = () => {
     navigate("/login");
   };
+  const navigateHomePage= () => {
+    navigate("/Home");
+  };
+  const { user,loading} = useAuth();
+  const displayName = user?.userName ?? user?.email ?? "User";
+
+      
   return (
     <nav
       className={`relative bg-primary-dark flex flex-col h-full md:border-r-[0.5px] border-white/15 ${className ?? ""}`.trim()}
@@ -124,6 +130,7 @@ function Navbar({ className, ...props }: NavbarProps) {
               active={activeItem === "Dashboard"}
               onClick={() => {
                 setActiveItem("Dashboard");
+                navigateHomePage();
                 setOpen(false);
               }}
             />
@@ -155,15 +162,21 @@ function Navbar({ className, ...props }: NavbarProps) {
               }}
             />
             <span className="border-b-[0.5px] border-white/15 w-auto block mt-105 md:mt-150 lg:mt-115 lg:inline"></span>
-            <div className="flex items-center gap-8">
-              <div className="size-10 bg-white/15 p-2 rounded-3xl mt-6">
-                {/* features: add user name after auth*/}
-                <button onClick={navigateLogin}>
-                  <CircleUserRound className="text-primary" />
-                </button>
-              </div>
-              <p className="text-white font-bold mt-6">UserName</p>
+            {!loading && !user ? (
+            <div className="py-2 bg-primary rounded-2xl w-20 text-center">
+              <button className="text-black font-bold items-center" type="button" onClick={navigateLogin}>Join us</button>
             </div>
+            ) :(
+              <div className="flex items-center gap-8">
+                <div className="size-10 bg-white/15 p-2 rounded-3xl mt-6">
+                  {/* features: add user name after auth*/}
+                  <button >
+                    <CircleUserRound className="text-primary" />
+                  </button>
+                </div>
+                <p className="text-white font-bold mt-6">{displayName}</p>
+              </div>
+            )}
           </div>
         </div>
       )}

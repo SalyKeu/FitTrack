@@ -5,7 +5,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { createClient } from "@supabase/supabase-js";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { client} from "../utils/supabaseClient";
 
 type User = {
   id: string;
@@ -17,7 +18,7 @@ type AuthContextType = {
   loading: boolean;
   handleSignIn: (email: string, password: string) => Promise<string>;
   handleSignOut: () => Promise<void>;
-  handleSingUp: (
+  handleSignUp: (
     email: string,
     password: string,
     userName: string,
@@ -27,10 +28,8 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
-  );
+  const supabase = client;
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,12 +38,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setUser({ id: session.user.id, email: session.user.email ?? "" });
+        setUser({
+          userName: session.user.user_metadata?.userName,
+          id: session.user.id,
+          email: session.user.email ?? "",
+        });
       } else {
         setUser(null);
       }
       setLoading(false);
-    });
+      },
+    );
 
     return () => {
       subscription.unsubscribe();
@@ -64,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return "Sign in successful";
   };
 
-  const handleSingUp = async (
+  const handleSignUp = async (
     email: string,
     password: string,
     userName: string,
@@ -92,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, handleSignIn, handleSignOut, handleSingUp }}
+      value={{ user, loading, handleSignIn, handleSignOut, handleSignUp }}
     >
       {children}
     </AuthContext.Provider>

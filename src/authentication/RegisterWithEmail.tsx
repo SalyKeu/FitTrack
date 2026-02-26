@@ -1,23 +1,54 @@
 import { useNavigate } from "react-router-dom";
 import google from "../assets/google.png";
 import { useState } from "react";
+import { useAuth } from "../context/AuthProvider";
 
 function RegisterWithEmail() {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState("");
+  const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { handleSignUp, loading } = useAuth();
+
 
   const handleClose = () => {
     navigate("/Homepage");
   };
+  const navigateLogin = () => {
+    navigate("/login");
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+
+    if (userName.trim() === "" || email.trim() === ""){
+      setError("Please fill in all fields");
+      return;
+    }
+    if (password.length < 6 || confirmPassword.length < 6 || password !== confirmPassword){
+      setError("Password must be at least 6 characters and match the confirmation password")
+      return;
+    }
+   setIsLoading(true);
+
+   const result = await handleSignUp(email, password, userName);
+   if (result === "Sign up successful") {
+    alert("account created sucessfully");
+    navigate("/login");
+   }
+   else {
+    setError(result);
+    setIsLoading(false);
+    return
+   }
+   setIsLoading(false);
+   navigate("/home");
+      
   };
   return (
     <div className="bg-white/40 backdrop-blur-[3px] fixed inset-0 items-center justify-center flex z-50">
@@ -43,14 +74,14 @@ function RegisterWithEmail() {
           <form className="space-y-2" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
               <label className="text-black text-sm font-sans font-bold">
-                Full Name
+                User Name
               </label>
               <input
                 type="text"
                 placeholder="John Doe"
                 className="w-full p-2 border-black border-2 rounded"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -91,25 +122,26 @@ function RegisterWithEmail() {
             </div>
             <button
               type="submit"
-              disabled={loading}
-              className="button-primary w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading || loading}
+              className="w-full mt-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark transition-colors duration-150 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating account..." : "Sign Up"}
+              {isLoading || loading ? "Creating account..." : "Sign Up"}
             </button>
             <p className="text-center mt-8 text-md font-sans">
               ━━━━━━━ Or continue with ━━━━━━━
             </p>
-            <button className="mt-4 w-full flex items-center justify-center gap-2 py-2 px-4 font-bold button-primary hover:bg-gray-50 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150">
-              <img src={google} alt="google" />
-              {/* <google className="text-xl text-[#DB4437]" /> */}
-              Continue with Google
+            <div className="w-full border-2 border-black rounded hover:bg-gray-300 transition-colors duration-150">
+              <button className="w-full flex items-center justify-center gap-2 py-2 px-4 font-bold transition-colors duration-150"
+              type="button">
+                <img src={google} alt="google" />
+                {/* <google className="text-xl text-[#DB4437]" /> */}
+                Continue with Google
+              </button>
+            </div>
+            <button className="w-full flex justify-center items-center mt-6 py-2 hover:underline"
+            type="button"onClick={navigateLogin}>
+                Already have an account?
             </button>
-            <p className="text-center mt-8 text-md font-sans">
-              Already have an account?{" "}
-              <a href="/" className="underline">
-                Log in
-              </a>
-            </p>
           </form>
         </div>
       </div>

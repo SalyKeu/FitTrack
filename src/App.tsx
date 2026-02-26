@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./component/layout/Navbar";
 import Home from "./component/layout/Home";
 import LoginWithEmail from "./authentication/LoginWithEmail";
@@ -7,16 +7,16 @@ import { AuthProvider } from "./context/AuthProvider";
 function App() {
   return (
     <AuthProvider>
-      <Broswerouter>
+      <BrowserRouter>
         <Navbar />
         <main className="pt-25 bg-primary-dark">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/login" element={<LoginWithEmail />} />
             <Route path="/signup" element={<RegisterWithEmail />} />
           </Routes>
         </main>
-      </Broswerouter>
+      </BrowserRouter>
     </AuthProvider>
   );
 }
