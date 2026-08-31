@@ -4,6 +4,7 @@ import Home from "./component/layout/Home";
 import LoginWithEmail from "./authentication/LoginWithEmail";
 import RegisterWithEmail from "./authentication/RegisterWithEmail";
 import { AuthProvider } from "./context/AuthProvider";
+import ForgetPassword from "./authentication/ForgetPassword";
 function App() {
   return (
     <AuthProvider>
@@ -14,6 +15,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<LoginWithEmail />} />
             <Route path="/signup" element={<RegisterWithEmail />} />
+            <Route path="/forgetpassword" element={<ForgetPassword />} />
           </Routes>
         </main>
       </BrowserRouter>

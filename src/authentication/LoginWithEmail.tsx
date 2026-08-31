@@ -31,6 +31,9 @@ function LoginWithEmail() {
   const handleNavigateSignUp = () => {
     navigate("/signup");
   };
+  const handleNavigateForgotPassword = () => {
+    navigate("/forgetpassword");
+  };
   return (
     <div className="bg-white/40 backdrop-blur-[3px] fixed inset-0 items-center justify-center flex z-50">
       <div className="bg-white w-100 max-h-[90vh] space-y-4 task-container rounded-lg p-4 relative">
@@ -72,6 +75,7 @@ function LoginWithEmail() {
               <button
                 type="button"
                 className="text-gray-400 text-sm font-sans hover:underline"
+                onClick={handleNavigateForgotPassword}
               >
                 Forgot your password?
               </button>

@@ -23,6 +23,8 @@ type AuthContextType = {
     password: string,
     userName: string,
   ) => Promise<string>;
+  handleForgotPassword: (email: string) => Promise<string>;
+  handleUpdatePassword: (newPassword: string) => Promise<string>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -94,9 +96,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   };
 
+  const handleForgotPassword = async (email: string): Promise<string> => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/forgetpassword`,
+    });
+
+    if (error) return error.message;
+    return "Password reset email sent";
+  };
+
+  const handleUpdatePassword = async (
+    newPassword: string,
+  ): Promise<string> => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) return error.message;
+    return "Password updated successfully";
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, handleSignIn, handleSignOut, handleSignUp }}
+      value={{
+        user,
+        loading,
+        handleSignIn,
+        handleSignOut,
+        handleSignUp,
+        handleForgotPassword,
+        handleUpdatePassword,
+      }}
     >
       {children}
     </AuthContext.Provider>

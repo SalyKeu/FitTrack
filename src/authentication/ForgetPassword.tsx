@@ -1,0 +1,106 @@
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState, type FormEvent } from "react";
+import { useAuth } from "../context/AuthProvider";
+import { client } from "../utils/supabaseClient";
+
+function ForgetPassword() {
+  const navigate = useNavigate();
+  const { handleForgotPassword, handleUpdatePassword } = useAuth();
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [message, SetMessage] = useState("");
+
+  const handleClose = () => {
+    navigate(-1);
+  };
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    SetMessage("");
+
+    const result = await handleForgotPassword(email);
+
+    if (result !== "Password reset email sent") {
+      setError(result);
+      return;
+    }
+    SetMessage(result);
+  };
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = client.auth.onAuthStateChange(async (event) => {
+      if (event == "PASSWORD_RECOVERY") {
+        const newPassword = prompt(
+          "What would you like your new password to be?"
+        );
+        if (!newPassword) return;
+
+        const result = await handleUpdatePassword(newPassword);
+
+        if (result === "Password updated successfully") {
+          alert(result);
+        } else {
+          alert("There was an error updating your password");
+        }
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [handleUpdatePassword]);
+
+  return (
+    <div className="bg-white/40 backdrop-blur-[3px] fixed inset-0 items-center justify-center flex z-50">
+      <div className="bg-white w-96 max-h-[90vh] space-y-4 task-container rounded-lg p-4 relative">
+        <button
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-2xl font-bold text-black hover:text-gray-300 transition-colors duration-150"
+          onClick={handleClose}
+        >
+          ×
+        </button>
+        <div className="">
+          <h1 className="font-bold text-black text-2xl">Password Reset</h1>
+          <p className="text-gray-400 text-sm">
+            Enter your email belolw to receive a password reset link
+          </p>
+        </div>
+        <div>
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 ">
+              {error}
+            </div>
+          )}
+          {message && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 ">
+              {message}
+            </div>
+          )}
+          <form className="space-y-2" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-2">
+              <label className="text-black text-sm font-sans font-bold">
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="m@example.com"
+                className="w-full p-2 border-black border-2 rounded"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <button
+              type="submit"
+              className="button-primary w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Send reset link
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default ForgetPassword;
